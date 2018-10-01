@@ -3,6 +3,7 @@
     <div class="autocomplete" role="combobox" aria-haspopup="listbox" aria-owns="autocomplete-results" :aria-expanded="isOpen">
       <input type="text"
         v-model="search"
+        @click.stop="onClick"
         @input="onChange"
         @keyup.down="onArrowDown"
         @keyup.up="onArrowUp"
@@ -11,7 +12,10 @@
         aria-controls="autocomplete-results"
         :aria-activedescendant="activedescendant"
         :aria-labelledby="ariaLabelledBy"
+        :placeholder="placeholder"
       />
+      <i role="button" aria-label="הצג-אפשרויות" class="open-indicator" :class="{'open':isOpen}"></i>
+      <div class="results-menu-border-filler" aria-hidden="true" v-show="isOpen"></div>
     </div>
 
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results" role="listbox">
@@ -19,7 +23,7 @@
         Loading results...
       </li>
       <li v-else v-for="(result, i) in results" :key="i"
-        @click="setResult(result)"
+        @click.stop="setResult(result)"
         class="autocomplete-result"
         :class="{ 'is-active': isSelected(i) }"
         role="option"
@@ -48,6 +52,11 @@ export default {
       type: String,
       required: true,
     },
+    placeholder: {
+      type: String,
+      required: false,
+      default: ''
+    }
   },
 
   data() {
@@ -62,27 +71,30 @@ export default {
   },
 
   methods: {
+    onClick() {
+      console.log('onClick');
+      this.filterResults();
+      this.isOpen = true;
+    },
     onChange() {
-      // Let's warn the parent that a change was made
+      console.log('onChange');
       this.$emit('input', this.search);
-
-      // Is the data given by an outside ajax request?
-      if (this.isAsync) {
-        this.isLoading = true;
-      } else {
-        // Let's search our flat array
-        this.filterResults();
-        this.isOpen = true;
-      }
+      this.filterResults();
+      this.isOpen = true;
+    },
+    onBlur() {
+      console.log('onBlur');
+      this.isOpen = false;
     },
 
     filterResults() {
-      // first uncapitalize all the things
+      console.log('filterResults');
       this.results = this.items.filter(item => {
         return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       });
     },
     setResult(result) {
+      console.log('setResult');
       this.search = result;
       this.isOpen = false;
     },
@@ -105,6 +117,7 @@ export default {
       this.arrowCounter = -1;
     },
     handleClickOutside(evt) {
+      console.log('handleClickOutside');
       if (!this.$el.contains(evt.target)) {
         this.isOpen = false;
         this.arrowCounter = -1;
@@ -124,7 +137,6 @@ export default {
   },
   watch: {
     items: function (val, oldValue) {
-      // actually compare them
       if (val.length !== oldValue.length) {
         this.results = val;
         this.isLoading = false;
@@ -140,31 +152,106 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@import "../scss/font-open-sans-hebrew.css";
 	.autocomplete {
+    align-items: center;
+    box-sizing: border-box;
+    color: rgb(91, 98, 101);
+    cursor: pointer;
+    direction: rtl;
+    display: flex;
+    height: 40px;
+    padding: 0;
+    width: 258px;
     position: relative;
-    width: 130px;
-	}
+  }
+  
+  input {
+    border: 1px solid rgba(60, 60, 60, 0.26);
+    border-radius: 3px;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: #5b6265;
+    direction: rtl;
+    font-family: 'Open Sans Hebrew';
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+    line-height: 22px;
+    height: 40px;
+    padding: 0 16px 0 45px;
+    outline: none;
+    max-width: 100%;
+    position: relative;
+    text-align: start;
+    width: 258px;
+
+    &.hide-caret {
+      color: transparent;
+      text-shadow: 0 0 0 #5b6265;
+    }
+    &:focus {
+      box-shadow: 0 0 2px 1px #76aaea;
+      border: 1px solid #66afe9;
+    }
+  }
+
+  .open-indicator {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 16px;
+    width: 16px;
+    height: 12px;
+    background-repeat: no-repeat;
+    background-image: url('../assets/open-indicator.svg');
+    &.open {
+      transform: rotate(180deg) translateY(50%)
+    }
+  }
 
 	.autocomplete-results {
+    direction: rtl;
 		padding: 0;
-		margin: 0;
-		border: 1px solid #eeeeee;
-		height: 120px;
-		overflow: auto;
-		width: 100%;
-	}
+		margin: 1px 0 0;
+    border: 1px solid rgba(60, 60, 60, 0.26);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    height: 137px;
+    width: 256px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
+    background: #fff;
+  }
+
+  .results-menu-border-filler {
+    display: block;
+    position: absolute;
+    border-left: 1px solid rgba(60, 60, 60, 0.26); 
+    border-right: 1px solid rgba(60, 60, 60, 0.26);
+    height: 2px;
+    width: 256px;
+    background: transparent;
+    bottom: -1px;
+    z-index: 100;
+    pointer-events: none;
+  }
 
 	.autocomplete-result {
 		list-style: none;
 		text-align: left;
-		padding: 4px 2px;
-		cursor: pointer;
+		padding: 3px 12px;
+    cursor: pointer;
+    color: #5b6265;
+    line-height: 28px;   
+    text-align: right;
+    font-family: 'Open Sans Hebrew';
 	}
 
 	.autocomplete-result.is-active,
 	.autocomplete-result:hover {
-		background-color: #4aae9b;
-		color: white;
+		background-color: #ebebeb;
 	}
 </style>
