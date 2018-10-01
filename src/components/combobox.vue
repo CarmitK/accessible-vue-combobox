@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="autocomplete" role="combobox" aria-haspopup="listbox" aria-owns="autocomplete-results" :aria-expanded="isOpen">
+    <div class="combobox" role="combobox" aria-haspopup="listbox" aria-owns="combobox-results" :aria-expanded="isOpen">
       <input type="text"
         v-model="search"
         @click.stop="onClick"
@@ -9,7 +9,7 @@
         @keyup.up="onArrowUp"
         @keyup.enter="onEnter"
         aria-autocomplete="list"
-        aria-controls="autocomplete-results"
+        aria-controls="combobox-results"
         :aria-activedescendant="activedescendant"
         :aria-labelledby="ariaLabelledBy"
         :placeholder="placeholder"
@@ -18,13 +18,13 @@
       <div class="results-menu-border-filler" aria-hidden="true" v-show="isOpen"></div>
     </div>
 
-    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results" role="listbox">
+    <ul id="combobox-results" v-show="isOpen" class="combobox-results" role="listbox">
       <li class="loading" v-if="isLoading">
         Loading results...
       </li>
       <li v-else v-for="(result, i) in results" :key="i"
         @click.stop="setResult(result)"
-        class="autocomplete-result"
+        class="combobox-result"
         :class="{ 'is-active': isSelected(i) }"
         role="option"
         :id="getId(i)"
@@ -158,7 +158,7 @@ export default {
 
 <style lang="scss">
 @import "../scss/font-open-sans-hebrew.css";
-	.autocomplete {
+	.combobox {
     align-items: center;
     box-sizing: border-box;
     color: rgb(91, 98, 101);
@@ -215,7 +215,7 @@ export default {
     }
   }
 
-	.autocomplete-results {
+	.combobox-results {
     direction: rtl;
 		padding: 0;
 		margin: 1px 0 0;
@@ -243,7 +243,7 @@ export default {
     pointer-events: none;
   }
 
-	.autocomplete-result {
+	.combobox-result {
 		list-style: none;
 		text-align: left;
 		padding: 3px 12px;
@@ -254,8 +254,8 @@ export default {
     font-family: 'Open Sans Hebrew';
 	}
 
-	.autocomplete-result.is-active,
-	.autocomplete-result:hover {
+	.combobox-result.is-active,
+	.combobox-result:hover {
 		background-color: #ebebeb;
 	}
 </style>

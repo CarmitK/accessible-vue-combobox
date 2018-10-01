@@ -1,24 +1,24 @@
 <template>
   <div>
     <label id="fruitLabel">Choose a fruit: </label>
-    <Autocomplete :items="[ 'Apple', 'Banana', 'Orange', 'Mango', 'Pear', 'Peach', 'Grape', 'Tangerine', 'Pineapple']" aria-labelled-by="fruitLabel" />
+    <combobox :items="[ 'Apple', 'Banana', 'Orange', 'Mango', 'Pear', 'Peach', 'Grape', 'Tangerine', 'Pineapple']" aria-labelled-by="fruitLabel" />
 
     <br>
     <hr>
     <br>
 
     <label id="cityLabel">עיר:</label>
-    <Autocomplete :items="['חיפה','יקנעם-עילית','תל-אביב','רמת-גן','נשר','נתניה']" aria-labelled-by="cityLabel" :placeholder="`בחר עיר`"/>
+    <combobox :items="['חיפה','יקנעם-עילית','תל-אביב','רמת-גן','נשר','נתניה']" aria-labelled-by="cityLabel" :placeholder="`בחר עיר`"/>
   </div>
 </template>
 
 <script>
-import Autocomplete from './components/autocomplete'
+import combobox from './components/combobox'
 
 export default {
   name: 'App',
   components: {
-    Autocomplete
+    combobox
   }
 }
 </script>
