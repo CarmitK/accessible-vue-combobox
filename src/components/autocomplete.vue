@@ -89,9 +89,13 @@ export default {
 
     filterResults() {
       console.log('filterResults');
-      this.results = this.items.filter(item => {
-        return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
-      });
+      if(this.search.length > 0) {
+        this.results = this.items.filter(item => {
+          return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+        });
+      } else if (this.search.length === 0) {
+        this.results = this.items
+      }
     },
     setResult(result) {
       console.log('setResult');
